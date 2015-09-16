@@ -2,7 +2,7 @@
 
 APP_NAME=$(echo $0 | cut -d"/" -f4)
 
-LOG_FOLDER_BASE=/var/log/spark
+LOG_FOLDER=/var/log/spark
 LOG_FILENAME=${LOG_FOLDER}/${APP_NAME}.out
 
 START_SCRIPT="<%= node[:spark][:home] %>/sbin/start-master.sh"
@@ -36,7 +36,7 @@ function start() {
 		return 1
 	fi
 	
-	${START_SCRIPT} >> ${LOG_FILENAME} 2>&1
+	su -s /bin/bash ${RUNAS_USER} -c " ${START_SCRIPT} >> ${LOG_FILENAME} 2>&1"
 	RETVAL=$?
 	cd ${CDIR}
 	return $RETVAL
@@ -65,7 +65,7 @@ function stop() {
 	log "Stopping ${APP_NAME}"
 	
 	if status >/dev/null; then  # is running
-		${STOP_SCRIPT} >> ${LOG_FILENAME} 2>&1
+		su -s /bin/bash ${RUNAS_USER} -c " ${STOP_SCRIPT} >> ${LOG_FILENAME} 2>&1"
 		RETVAL=$?
         rm -rf ${APP_PID_FILE}
 		return $RETVAL
