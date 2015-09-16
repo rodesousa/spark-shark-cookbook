@@ -12,6 +12,11 @@ export APP_PID_FILE
 
 log() {
 	echo $1
+	if [ ! -e ${LOG_FILENAME} ]; then
+     		touch ${LOG_FILENAME}
+     		chown {RUNAS_USER}:${RUNAS_USER} ${LOG_FILENAME}
+     		chmod 644 ${LOG_FILENAME}
+        fi
 	echo $1 >> ${LOG_FILENAME}
 }
 
@@ -62,7 +67,7 @@ function stop() {
 	if status >/dev/null; then  # is running
 		${STOP_SCRIPT} >> ${LOG_FILENAME} 2>&1
 		RETVAL=$?
-        rm ${APP_PID_FILE}
+        rm -rf ${APP_PID_FILE}
 		return $RETVAL
 	else    # is not running
 		log "${APP_NAME} is not running. Exiting."
